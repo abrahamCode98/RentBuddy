@@ -21,17 +21,5 @@ const User = sequelize.define(
 
 export default User;
 
-// Uncomment and define User_profile if needed
-// const User_profile = sequelize.define(
-//     'User_profile',
-//     {
-//         // Define additional fields here
-//     },
-//     { timestamps: true }
-// );
-
-// Establish relationship if User_profile is needed
-// User.hasOne(User_profile);
-// User_profile.belongsTo(User);
 
 
