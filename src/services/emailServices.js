@@ -1,40 +1,27 @@
-import nodemailer from 'nodemailer';
-import { v4 as uuidv4 } from 'uuid';
-import User from '../models/userModel.js';
+import transporter from '../config/emailConfig.js';
 
-export const sendEmailVerification =  async (email,) => {
+export const sendVerificationEmail = async (email, fullname, token) => {
+    const verificationLink = `${process.env.BASE_URL}/verify-email?token=${token}`;
 
-    try {
-        const verificationToken = uuidv4();
-        const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-        await User.update( { verificationToken, verificationTokenExpires:expiryDate }, {where: {email: email} } );
-
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
-        const mailContents =  {
-            from: `"Rent Buddy" ${process.env.EMAIL_USER}`,
-            to: email,
-            subject: 'Email Verification',
-            text: `Please click the link to verify your email address: 
-            http://localhost:8070/verify-email/${verificationToken}`,
-            html: `<p>Please click the link to verify your email address:</p>
-            <a href="http://localhost:8070/verify-email/${verificationToken}">Verify Email</a>`,
-        };
-    
-        await transporter.sendMail(mailContents);
-    
-        console.log('verification Email Sent!')
-        
-    } catch (error) {
-        console.error('Error sending verification Email:', error);
+    const mailOptions = {
+        from: `'RENTBUDDY' ${process.env.EMAIL_USER}`,
+        to: email,
+        subject: 'Verify Your Account',
+        html: `
+            <h1>Hello ${fullname},</h1>
+            <p>Thank you for signing up. Please verify your account by clicking the link below:</p> <br>
+            <a href="${verificationLink}" target="_blank">Verify Account</a> <br>
+            <p>If the link doesn't work, copy and paste the following URL into your browser:</p>
+            <p><a href="${verificationLink}" target="_blank">${verificationLink}</a></p>
+            <p>This link will expire in 1 hour.</p>
+        `,
     };
 
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Verification email sent to ${email}`);
+    } catch (error) {
+        console.error('Error sending email:', error.message);
+        throw new Error('Failed to send verification email');
+    }
 };
-

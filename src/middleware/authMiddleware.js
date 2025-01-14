@@ -4,14 +4,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers['authorization'];
     console.log('Authentication header:', authHeader);
 
-    if (!authHeader) {
-        return res.status(401).json({ message: 'No token provided' });
-    }
 
     const token = authHeader.split(' ')[1];
+    if (!token) {
+        res.status(401).json({ message: 'Access token missing' });
+    }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);

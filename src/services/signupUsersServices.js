@@ -1,9 +1,14 @@
-import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+import { sendVerificationEmail } from './emailServices.js';
 import User from '../models/userModel.js';
+import bcrypt from 'bcrypt';
 
-export const createUsers = async (fullname, email, password, birthday, gender, looking_for, interested_in, interests, isVerified, verificationToken) => {
+
+export const createUsers = async (fullname, email, password, birthday, gender, looking_for, interested_in, interests) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        const verificationToken = uuidv4();
 
         const user = await User.create({
             fullname,
@@ -14,17 +19,19 @@ export const createUsers = async (fullname, email, password, birthday, gender, l
             looking_for,
             interested_in,
             interests,
-            verificationToken
+            verificationToken,
         });
 
-        console.log('User created:', user);
+        // Send verification email
+        await sendVerificationEmail(email, fullname, verificationToken);
+
+        console.log('User created and verification email sent:', user);
         return user;
     } catch (error) {
         console.error('Error during user creation:', error.message);
         throw new Error('Error during user creation');
-    };
+    }
 };
-
 
 export const getUsers = async () => {
     try {

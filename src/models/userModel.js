@@ -12,9 +12,8 @@ const User = sequelize.define(
         looking_for: { type: DataTypes.STRING, allowNull: false },
         interested_in: { type: DataTypes.STRING, allowNull: false },
         interests: { type: DataTypes.STRING, allowNull: false },
-        isVerified: {type: DataTypes.BOOLEAN, defaultValue: false},
-        verificationToken: {type: DataTypes.STRING, allowNull: false},
-        verificationTokenExpires: { type: DataTypes.DATE, allowNull: true },
+        verificationToken: { type: DataTypes.STRING, allowNull: true },
+        isVerified: { type:DataTypes.BOOLEAN, defaultValue: false}
     },
     { timestamps: true }
 );

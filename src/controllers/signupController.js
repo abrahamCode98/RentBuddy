@@ -1,4 +1,3 @@
-import { sendEmailVerification } from '../services/emailServices.js';
 import {
     createUsers,
     getUsers,
@@ -15,8 +14,7 @@ export const createNewUsers =  async (req, res) => {
     try {
         const user = await createUsers(fullname, email, password, birthday, gender, looking_for, interested_in, interests);
 
-        await  sendEmailVerification(email, user.verificationToken);
-
+        console.log(user);
         res.status(201).json({message: 'User created, Verification email sent'});
         
     } catch(error) {
